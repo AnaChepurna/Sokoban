@@ -39,13 +39,11 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	AActor *Owner = GetOwner();
 	if (Owner && bHasTarget) {
 		FVector OwnerLocation = Owner->GetActorLocation();
-		FVector distance = vtarget - OwnerLocation;
-		if (!distance.IsNearlyZero()) {
+		if (OwnerLocation != vtarget) {
 			FVector NewLocation = FMath::VInterpConstantTo(OwnerLocation, vtarget, DeltaTime, fSpeed);
 			Owner->SetActorLocation(NewLocation);
 		}
 		else {
-			Owner->SetActorLocation(vtarget);
 			Deactivate();
 		}
 	}
