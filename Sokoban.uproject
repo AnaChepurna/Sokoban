@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{8255C974-4A7B-C5FC-E236-5A9F309B7544}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Sokoban",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
