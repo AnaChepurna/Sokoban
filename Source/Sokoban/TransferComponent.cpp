@@ -11,13 +11,14 @@ UTransferComponent::UTransferComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 
 	fDistance = 120.0f;
-	fSpeed = 150.0f;
+	fSpeed = 200.0f;
 	vDirection = FVector::ZeroVector;
 	vtarget = FVector::ZeroVector;
 	bAutoActivate = false;
 	bHasTarget = false;
 	bHasPower = false;
 	bCanMoveWithoutFloor = false;
+	bCanMove = true;
 }
 
 
@@ -118,6 +119,8 @@ void UTransferComponent::Deactivate()
 
 void UTransferComponent::TransferActor(FVector direction)
 {
+	if (!bCanMove)
+		return;
 	AActor *Owner = GetOwner();
 	if (direction.IsNearlyZero() || bHasTarget || !Owner)
 		return;

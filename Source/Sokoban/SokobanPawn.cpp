@@ -23,7 +23,7 @@ void ASokobanPawn::OnConstruction(const FTransform& Transform)
 		Speed = Trans->GetDistance();
 	NewLocation.X = FMath::RoundToInt(NewLocation.X / Speed) * Speed;
 	NewLocation.Y = FMath::RoundToInt(NewLocation.Y / Speed) * Speed;
- 	t.SetLocation(FVector(NewLocation.X, NewLocation.Y, 100.0f));
+ 	t.SetLocation(FVector(NewLocation.X, NewLocation.Y, 60.0f));
  	SetActorTransform(t);
 
 	Super::OnConstruction(t);

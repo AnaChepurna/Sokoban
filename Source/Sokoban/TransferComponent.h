@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bHasPower;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bCanMove;
+
 	UFUNCTION(BlueprintCallable)
 		void SetDistance(float distance);
 
