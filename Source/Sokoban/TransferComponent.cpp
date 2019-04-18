@@ -45,7 +45,8 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		if (!distance.IsNearlyZero()) {
 			FVector NewLocation = FMath::VInterpConstantTo(OwnerLocation, vtarget, DeltaTime, fSpeed);
 			Owner->SetActorLocation(NewLocation);
-			checkFloor();
+			if (!checkFloor())
+				transferBack();
 		}
 		else {
 			Owner->SetActorLocation(vtarget);
@@ -79,10 +80,10 @@ void UTransferComponent::setTarget()
 	}
 }
 
-void UTransferComponent::checkFloor()
+bool UTransferComponent::checkFloor()
 {
 	if (bCanMoveWithoutFloor)
-		return;
+		return true;
 	AActor *Owner = GetOwner();
 	if (Owner)
 	{
@@ -93,8 +94,9 @@ void UTransferComponent::checkFloor()
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
 		if (!UKismetSystemLibrary::LineTraceSingleForObjects(Owner, Start, End, TraceObjects, false, TArray<AActor*>(), EDrawDebugTrace::None, HitOut, true))
-			transferBack();
+			return false;
 	}
+	return true;
 }
 
 void UTransferComponent::Activate(bool bReset)

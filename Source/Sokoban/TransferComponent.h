@@ -55,7 +55,7 @@ protected:
 		bool bCanMoveWithoutFloor;
 
 	UFUNCTION()
-		void checkFloor();
+		bool checkFloor();
 
 public:
 
