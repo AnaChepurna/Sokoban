@@ -87,7 +87,7 @@ void UTransferComponent::checkFloor()
 	if (Owner)
 	{
 		FVector Start = Owner->GetActorLocation();
-		FVector End = Start + FVector(0.0f, 0.0f, -100.0f);
+		FVector End = Start + FVector(0.0f, 0.0f, -100.0f) + GetDirection() * 30.f;
 		FHitResult HitOut;
 		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
@@ -132,7 +132,8 @@ void UTransferComponent::OnBeginOverlap(AActor *OtherActor)
 		FVector direction = GetDirection();
 		if (!transfer || (bHasTarget && transfer->bHasTarget &&
 			(transfer->GetDirection() != direction)) ||
-			(!bHasPower && bHasTarget && transfer->GetDirection() != direction && !transfer->bHasPower))
+			(!bHasPower && bHasTarget && transfer->GetDirection() != direction && !transfer->bHasPower) ||
+			bHasTarget && transfer->bHasTarget && transfer->GetDirection() != direction && transfer->vtarget == transfer->vPreviousPosition)
 		{
 			transferBack();
 		}
