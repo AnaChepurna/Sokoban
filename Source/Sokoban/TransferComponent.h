@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Array.h"
+#include "BaseSokobanActor.h"
 #include "TransferComponent.generated.h"
 
 
@@ -49,6 +50,12 @@ protected:
 
 	UFUNCTION()
 		void setTarget();
+
+	UPROPERTY()
+		bool bCanMoveWithoutFloor;
+
+	UFUNCTION()
+		void checkFloor();
 
 public:
 

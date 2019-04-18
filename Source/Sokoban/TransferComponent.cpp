@@ -2,6 +2,7 @@
 
 #include "TransferComponent.h"
 #include "SokobanPawn.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UTransferComponent::UTransferComponent()
@@ -16,6 +17,7 @@ UTransferComponent::UTransferComponent()
 	bAutoActivate = false;
 	bHasTarget = false;
 	bHasPower = false;
+	bCanMoveWithoutFloor = false;
 }
 
 
@@ -43,6 +45,7 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		if (!distance.IsNearlyZero()) {
 			FVector NewLocation = FMath::VInterpConstantTo(OwnerLocation, vtarget, DeltaTime, fSpeed);
 			Owner->SetActorLocation(NewLocation);
+			checkFloor();
 		}
 		else {
 			Owner->SetActorLocation(vtarget);
@@ -73,6 +76,24 @@ void UTransferComponent::setTarget()
 		FVector Location = GetOwner()->GetActorLocation();
 		FVector Destination = vDirection * fDistance;
 		vtarget = Location + Destination;
+	}
+}
+
+void UTransferComponent::checkFloor()
+{
+	if (bCanMoveWithoutFloor)
+		return;
+	AActor *Owner = GetOwner();
+	if (Owner)
+	{
+		FVector Start = Owner->GetActorLocation();
+		FVector End = Start + FVector(0.0f, 0.0f, -100.0f);
+		FHitResult HitOut;
+		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
+		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+		if (!UKismetSystemLibrary::LineTraceSingleForObjects(Owner, Start, End, TraceObjects, false, TArray<AActor*>(), EDrawDebugTrace::None, HitOut, true))
+			transferBack();
 	}
 }
 
