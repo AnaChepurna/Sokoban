@@ -4,6 +4,9 @@
 #include "SokobanPawn.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+FVector UTransferComponent::directions[4] = {FVector(1.0f, 0.0f, 0.0f), FVector(-1.0f, 0.0f, 0.0f),
+												 FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, -1.0f, 0.0f)};
+
 // Sets default values for this component's properties
 UTransferComponent::UTransferComponent()
 {
@@ -46,7 +49,7 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		if (!distance.IsNearlyZero()) {
 			FVector NewLocation = FMath::VInterpConstantTo(OwnerLocation, vtarget, DeltaTime, fSpeed);
 			Owner->SetActorLocation(NewLocation);
-			if (!checkFloor())
+			if (!checkFloor(vDirection))
 				transferBack();
 		}
 		else {
@@ -54,6 +57,19 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 			Deactivate();
 		}
 	}
+}
+
+bool UTransferComponent::isBlocked()
+{
+	FVector result = FVector(0, 0, 0);
+	for (FVector d: directions)
+	{
+		if (!checkFloor(d) || checkDirectionBlocked(d))
+			result += d;
+	}
+	if (!result.IsNearlyZero() && !result.IsNormalized())
+		return true;
+	return false;
 }
 
 void UTransferComponent::SetDistance(float distance)
@@ -81,15 +97,13 @@ void UTransferComponent::setTarget()
 	}
 }
 
-bool UTransferComponent::checkFloor()
+bool UTransferComponent::checkDirectionBlocked(FVector direction)
 {
-	if (bCanMoveWithoutFloor)
-		return true;
 	AActor *Owner = GetOwner();
 	if (Owner)
 	{
 		FVector Start = Owner->GetActorLocation();
-		FVector End = Start + FVector(0.0f, 0.0f, -100.0f) + GetDirection() * 30.f;
+		FVector End = Start + direction * 70.f;
 		FHitResult HitOut;
 		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
@@ -98,6 +112,13 @@ bool UTransferComponent::checkFloor()
 			return false;
 	}
 	return true;
+}
+
+bool UTransferComponent::checkFloor(FVector direction)
+{
+	if (bCanMoveWithoutFloor)
+		return true;
+	return checkDirectionBlocked(direction + FVector(0.0f, 0.0f, -10.0f));
 }
 
 void UTransferComponent::Activate(bool bReset)

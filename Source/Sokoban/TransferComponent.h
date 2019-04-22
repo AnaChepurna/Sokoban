@@ -8,7 +8,6 @@
 #include "BaseSokobanActor.h"
 #include "TransferComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SOKOBAN_API UTransferComponent : public UActorComponent
 {
@@ -17,6 +16,8 @@ class SOKOBAN_API UTransferComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UTransferComponent();
+
+	static FVector directions[4];
 
 protected:
 	// Called when the game starts
@@ -54,10 +55,16 @@ protected:
 	UPROPERTY()
 		bool bCanMoveWithoutFloor;
 
-	UFUNCTION()
-		bool checkFloor();
+	UFUNCTION(BlueprintCallable)
+		bool checkDirectionBlocked(FVector direction);
+
+	UFUNCTION(BlueprintCallable)
+		bool checkFloor(FVector direction);
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+		bool isBlocked();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bHasPower;
