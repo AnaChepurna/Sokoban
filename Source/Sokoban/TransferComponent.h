@@ -46,7 +46,7 @@ protected:
 	UPROPERTY()
 		FVector vPreviousPosition;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool bHasTarget;
 
 	UFUNCTION()
@@ -61,10 +61,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		bool checkFloor(FVector direction);
 
+	UFUNCTION()
+		bool checkDirection(FVector direction);
+
 public:
 
 	UFUNCTION(BlueprintCallable)
-		bool isBlocked();
+		int NumBlockedDirections();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bHasPower;

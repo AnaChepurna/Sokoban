@@ -59,17 +59,14 @@ void UTransferComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 }
 
-bool UTransferComponent::isBlocked()
+int UTransferComponent::NumBlockedDirections()
 {
-	FVector result = FVector(0, 0, 0);
-	for (FVector d: directions)
-	{
-		if (!checkFloor(d) || checkDirectionBlocked(d))
-			result += d;
-	}
-	if (!result.IsNearlyZero() && !result.IsNormalized())
-		return true;
-	return false;
+	int res = 0;
+	if (checkDirection(directions[0]) || checkDirection(directions[1]))
+		res += 1;
+	if (checkDirection(directions[2]) || checkDirection(directions[3]))
+		res += 1;
+	return res;
 }
 
 void UTransferComponent::SetDistance(float distance)
@@ -103,12 +100,15 @@ bool UTransferComponent::checkDirectionBlocked(FVector direction)
 	if (Owner)
 	{
 		FVector Start = Owner->GetActorLocation();
-		FVector End = Start + direction * 70.f;
+		direction.Normalize();
+		FVector End = Start + direction * 150.f;
 		FHitResult HitOut;
 		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
 		TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
 		if (!UKismetSystemLibrary::LineTraceSingleForObjects(Owner, Start, End, TraceObjects, false, TArray<AActor*>(), EDrawDebugTrace::None, HitOut, true))
+			return false;
+		if (Cast<ASokobanPawn>(HitOut.GetActor()))
 			return false;
 	}
 	return true;
@@ -119,6 +119,18 @@ bool UTransferComponent::checkFloor(FVector direction)
 	if (bCanMoveWithoutFloor)
 		return true;
 	return checkDirectionBlocked(direction + FVector(0.0f, 0.0f, -10.0f));
+}
+
+bool UTransferComponent::checkDirection(FVector const direction)
+{
+	FVector d = direction;
+	d *= 15;
+	if (!checkFloor(d))
+		return true;
+	d = direction;
+	if (checkDirectionBlocked(d))
+		return true;
+	return false;
 }
 
 void UTransferComponent::Activate(bool bReset)
